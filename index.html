@@ -1,1 +1,872 @@
-TEST
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gvazei Winery | ღვაზეი მარნი</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#07050300',
+            gold: '#b89030',
+            'gold-light': '#d4aa50',
+            cream: '#f0e8d8',
+            'cream-dim': '#bfb498',
+            burgundy: '#5a0e0e',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --obsidian: #080503;
+      --gold: #b89030;
+      --gold-light: #d4aa50;
+      --cream: #f0e8d8;
+      --cream-dim: #bfb498;
+      --burgundy: #5a0e0e;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--obsidian);
+      color: var(--cream);
+      font-family: 'Jost', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Grain texture overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+      mix-blend-mode: overlay;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--obsidian); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); }
+
+    /* ── Typography ── */
+    .font-display { font-family: 'Cormorant Garamond', serif; }
+
+    /* ── Nav ── */
+    #main-nav {
+      transition: background 0.5s ease, box-shadow 0.5s ease;
+    }
+    #main-nav.scrolled {
+      background: rgba(8, 5, 3, 0.93);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 1px 0 rgba(184,144,48,0.12);
+    }
+
+    /* ── Hero ── */
+    #hero {
+      height: 100svh;
+      min-height: 600px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+    }
+    #hero-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    #hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.05);
+      transition: transform 6s ease;
+    }
+    #hero-bg img.loaded { transform: scale(1); }
+    #hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top,  rgba(8,5,3,1) 0%, rgba(8,5,3,0.55) 45%, rgba(8,5,3,0.15) 100%),
+        linear-gradient(to right, rgba(8,5,3,0.7) 0%, transparent 65%);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .anim { opacity: 0; animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .anim-1 { animation-delay: 0.3s; }
+    .anim-2 { animation-delay: 0.55s; }
+    .anim-3 { animation-delay: 0.8s; }
+    .anim-4 { animation-delay: 1.0s; }
+
+    @keyframes pulse-line {
+      0%,100% { opacity: 0.3; transform: scaleY(0.7); }
+      50%      { opacity: 1;   transform: scaleY(1);   }
+    }
+    .scroll-indicator {
+      animation: pulse-line 2s ease-in-out infinite;
+    }
+
+    /* ── Reveal on scroll ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    /* ── Gold line ── */
+    .gold-rule {
+      display: block;
+      width: 52px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    /* ── Buttons ── */
+    .btn-outline {
+      display: inline-block;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Jost', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 11px 32px;
+      transition: background 0.3s, color 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-outline:hover {
+      background: var(--gold);
+      color: var(--obsidian);
+    }
+    .btn-solid {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--gold);
+      color: var(--obsidian);
+      font-family: 'Jost', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 13px 36px;
+      transition: opacity 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-solid:hover { opacity: 0.88; }
+    .btn-wa {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #22c55e;
+      color: white;
+      font-family: 'Jost', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 13px 32px;
+      transition: opacity 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-wa:hover { opacity: 0.88; }
+
+    /* ── Wine Cards ── */
+    .wine-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      aspect-ratio: 3 / 4;
+      background: #120808;
+    }
+    .wine-card img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.65s ease;
+      filter: brightness(0.82) saturate(0.9);
+    }
+    .wine-card:hover img {
+      transform: scale(1.07);
+      filter: brightness(0.65) saturate(1.1);
+    }
+    .wine-card-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(8,5,3,0.97) 0%, rgba(8,5,3,0.25) 55%, transparent 100%);
+      transition: opacity 0.4s;
+    }
+    .wine-card:hover .wine-card-gradient {
+      background: linear-gradient(to top, rgba(8,5,3,1) 0%, rgba(8,5,3,0.55) 65%, rgba(90,14,14,0.2) 100%);
+    }
+    .wine-card-body {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      padding: 20px 22px;
+      z-index: 2;
+    }
+    .wine-card-cta {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      white-space: nowrap;
+      z-index: 3;
+    }
+    .wine-card:hover .wine-card-cta {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* fallback card gradient per type */
+    .card-bg-white  { background: linear-gradient(135deg, #10180a 0%, #1d3010 60%, #080a05 100%); }
+    .card-bg-red    { background: linear-gradient(135deg, #180808 0%, #330e0e 60%, #080303 100%); }
+    .card-bg-amber  { background: linear-gradient(135deg, #181008 0%, #332510 60%, #080503 100%); }
+    .card-bg-gift   { background: linear-gradient(135deg, #10100a 0%, #20201a 60%, #050503 100%); }
+
+    /* ── Gallery ── */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+    @media (max-width: 640px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .gallery-cell {
+      aspect-ratio: 1;
+      overflow: hidden;
+      background: #0d0a08;
+    }
+    .gallery-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.8) sepia(0.15);
+      transition: transform 0.55s ease, filter 0.55s ease;
+    }
+    .gallery-cell:hover img {
+      transform: scale(1.08);
+      filter: brightness(0.95) sepia(0);
+    }
+
+    /* ── Bottom Order Drawer ── */
+    #order-drawer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      transform: translateY(calc(100% - 46px));
+      transition: transform 0.42s cubic-bezier(0.22,1,0.36,1);
+    }
+    #order-drawer.open { transform: translateY(0); }
+
+    .drawer-tab {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      background: var(--burgundy);
+      border-top: 1px solid rgba(184,144,48,0.25);
+      user-select: none;
+    }
+    .drawer-tab span { font-family: 'Jost'; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: #f0e8d8; }
+
+    .drawer-body {
+      background: rgba(8,5,3,0.96);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(184,144,48,0.12);
+      padding: 16px 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .drawer-btn {
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(184,144,48,0.35);
+      padding: 9px 18px;
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.25s, border-color 0.25s, color 0.25s;
+    }
+    .drawer-btn:hover {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--obsidian);
+    }
+
+    /* ── Floating WA ── */
+    .wa-bubble {
+      position: fixed;
+      right: 22px;
+      bottom: 62px;
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      background: #22c55e;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 18px rgba(34,197,94,0.45);
+      cursor: pointer;
+      z-index: 195;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+    }
+    .wa-bubble:hover { transform: scale(1.12); box-shadow: 0 6px 28px rgba(34,197,94,0.65); }
+
+    /* ── Mobile Nav ── */
+    #mobile-nav-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(8,5,3,0.97);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #mobile-nav-overlay.open { display: flex; }
+
+    /* ── Decorative corner ── */
+    .corner-tl::before, .corner-br::after {
+      content: '';
+      position: absolute;
+      width: 26px; height: 26px;
+    }
+    .corner-tl::before { top: -2px; left: -2px; border-top: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+    .corner-br::after  { bottom: -2px; right: -2px; border-bottom: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+
+    /* ── WA SVG inline ── */
+    .wa-icon { width: 18px; height: 18px; flex-shrink: 0; }
+    .wa-icon-sm { width: 14px; height: 14px; flex-shrink: 0; }
+  </style>
+</head>
+
+<body>
+
+<!-- ════════════════════════════════════
+     NAV
+════════════════════════════════════ -->
+<nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5">
+
+  <!-- Logo -->
+  <a href="#hero" class="flex items-center gap-3 no-underline">
+    <img src="Assets/logo.png" alt="Gvazei" class="h-9 w-auto object-contain"
+         onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block'">
+    <span id="logo-text" class="font-display text-2xl tracking-widest hidden" style="color:var(--gold-light); font-style:italic">Gvazei</span>
+  </a>
+
+  <!-- Desktop links -->
+  <div class="hidden md:flex items-center gap-8" style="color:var(--cream-dim)">
+    <a href="#story"   class="text-xs tracking-widest uppercase hover:text-white transition-colors" style="font-family:'Jost'" data-en="Story"   data-ka="ისტორია">Story</a>
+    <a href="#wines"   class="text-xs tracking-widest uppercase hover:text-white transition-colors" style="font-family:'Jost'" data-en="Wines"   data-ka="ღვინოები">Wines</a>
+    <a href="#gallery" class="text-xs tracking-widest uppercase hover:text-white transition-colors" style="font-family:'Jost'" data-en="Gallery" data-ka="გალერეა">Gallery</a>
+    <a href="#contact" class="text-xs tracking-widest uppercase hover:text-white transition-colors" style="font-family:'Jost'" data-en="Contact" data-ka="კონტაქტი">Contact</a>
+  </div>
+
+  <!-- Right cluster -->
+  <div class="flex items-center gap-3">
+    <button onclick="toggleLang()" class="text-xs tracking-widest px-3 py-1 border transition-all hover:border-opacity-100" 
+            style="font-family:'Jost'; color:var(--gold); border:1px solid rgba(184,144,48,0.45)">
+      <span id="lang-toggle-label">KA</span>
+    </button>
+    <a href="https://wa.me/995599946000" target="_blank"
+       class="hidden md:flex items-center gap-2 text-xs tracking-widest uppercase px-4 py-2"
+       style="font-family:'Jost'; background:var(--gold); color:var(--obsidian)">
+      <svg class="wa-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      <span data-en="Order" data-ka="შეკვეთა">Order</span>
+    </a>
+    <!-- Hamburger -->
+    <button onclick="openMobileNav()" class="md:hidden flex flex-col gap-1.5 p-1">
+      <span style="display:block;width:22px;height:1px;background:var(--cream)"></span>
+      <span style="display:block;width:16px;height:1px;background:var(--cream)"></span>
+      <span style="display:block;width:22px;height:1px;background:var(--cream)"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Nav Overlay -->
+<div id="mobile-nav-overlay">
+  <button onclick="closeMobileNav()" style="position:absolute;top:22px;right:24px;font-size:20px;color:var(--cream-dim);background:none;border:none;cursor:pointer">✕</button>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:32px">
+    <a href="#story"   onclick="closeMobileNav()" class="font-display text-4xl" style="font-style:italic;color:var(--cream)" data-en="Story"   data-ka="ისტორია">Story</a>
+    <a href="#wines"   onclick="closeMobileNav()" class="font-display text-4xl" style="font-style:italic;color:var(--cream)" data-en="Wines"   data-ka="ღვინოები">Wines</a>
+    <a href="#gallery" onclick="closeMobileNav()" class="font-display text-4xl" style="font-style:italic;color:var(--cream)" data-en="Gallery" data-ka="გალერეა">Gallery</a>
+    <a href="#contact" onclick="closeMobileNav()" class="font-display text-4xl" style="font-style:italic;color:var(--cream)" data-en="Contact" data-ka="კონტაქტი">Contact</a>
+    <div style="display:flex;gap:16px;margin-top:16px">
+      <a href="https://wa.me/995599946000" target="_blank" class="btn-wa">
+        <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span data-en="Order" data-ka="შეკვეთა">Order</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     HERO
+════════════════════════════════════ -->
+<section id="hero">
+  <div id="hero-bg">
+    <img src="Assets/hero.jpg" alt="Gvazei Vineyard" onload="this.classList.add('loaded')">
+  </div>
+
+  <div style="position:relative;z-index:10;padding:0 28px 64px;max-width:780px" class="md:pl-16 md:pb-28">
+    <p class="anim anim-1 text-xs tracking-widest uppercase mb-5" style="font-family:'Jost';color:var(--gold)">
+      <span data-en="Georgia · Kakheti · Natural Wine" data-ka="საქართველო · კახეთი · ბუნებრივი ღვინო">Georgia · Kakheti · Natural Wine</span>
+    </p>
+    <h1 class="anim anim-2 font-display" style="font-size:clamp(60px,10vw,108px);line-height:0.92;font-style:italic;color:var(--cream);margin-bottom:6px">
+      <span data-en="Gvazei" data-ka="ღვაზეი">Gvazei</span>
+    </h1>
+    <p class="anim anim-2" style="font-family:'Jost';font-size:clamp(13px,2vw,17px);font-weight:200;letter-spacing:6px;text-transform:uppercase;color:var(--gold-light);margin-bottom:28px">
+      <span data-en="WINERY" data-ka="მარნი">WINERY</span>
+    </p>
+    <span class="gold-rule anim anim-3" style="margin-bottom:24px;display:block"></span>
+    <p class="anim anim-3 text-sm font-light leading-7 mb-10" style="color:var(--cream-dim);max-width:440px">
+      <span data-en="Ancient qvevri craft. Living wines born from Georgian soil. Each bottle is a thousand years of memory." data-ka="ქვევრის ძველი ოსტატობა. ბუნებრივი ღვინო ქართული მიწიდან. თითოეული ბოთლი — ათასი წლის მეხსიერება.">Ancient qvevri craft. Living wines born from Georgian soil. Each bottle is a thousand years of memory.</span>
+    </p>
+    <div class="anim anim-4" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <a href="#wines" class="btn-outline" data-en="Explore Wines" data-ka="ღვინოები">Explore Wines</a>
+      <a href="https://wa.me/995599946000" target="_blank"
+         style="display:inline-flex;align-items:center;gap:8px;font-family:'Jost';font-size:12px;letter-spacing:1.5px;color:var(--cream-dim);text-decoration:none;transition:color 0.3s"
+         onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--cream-dim)'">
+        <svg class="wa-icon" viewBox="0 0 24 24" fill="#22c55e"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span data-en="Order via WhatsApp" data-ka="WhatsApp-ით შეკვეთა">Order via WhatsApp</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <div style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px">
+    <div class="scroll-indicator" style="width:1px;height:46px;background:linear-gradient(to bottom,var(--gold),transparent)"></div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════
+     STORY
+════════════════════════════════════ -->
+<section id="story" style="padding:96px 28px" class="md:px-16">
+  <div style="max-width:1100px;margin:0 auto">
+    <div style="display:grid;grid-template-columns:1fr;gap:56px" class="md:grid-cols-2 md:items-center">
+
+      <!-- Text -->
+      <div class="reveal">
+        <p class="text-xs tracking-widest uppercase mb-4" style="font-family:'Jost';color:var(--gold)">
+          <span data-en="Our Heritage" data-ka="ჩვენი მემკვიდრეობა">Our Heritage</span>
+        </p>
+        <h2 class="font-display mb-6" style="font-size:clamp(42px,5vw,62px);line-height:1;font-style:italic;color:var(--cream)">
+          <span data-en="Born from<br>the ancient vine" data-ka="ძველი ვაზიდან<br>დაბადებული">Born from<br>the ancient vine</span>
+        </h2>
+        <span class="gold-rule" style="margin-bottom:28px;display:block"></span>
+        <p class="text-sm font-light leading-8 mb-5" style="color:var(--cream-dim)">
+          <span data-en="Gvazei Winery is rooted in Georgia's Kakheti region — the cradle of wine civilization, where qvevri winemaking was born over 8,000 years ago. We carry that tradition forward with care and without compromise."
+                data-ka="ღვაზეი მარანი ფესვგადგმულია საქართველოს კახეთის რეგიონში — ღვინის ცივილიზაციის სარბიელში, სადაც ქვევრის ოსტატობა 8000 წელზე მეტია ცოცხლობს. ჩვენ ამ ტრადიციას ვინარჩუნებთ სიფრთხილით და კომპრომისის გარეშე.">
+            Gvazei Winery is rooted in Georgia's Kakheti region — the cradle of wine civilization, where qvevri winemaking was born over 8,000 years ago. We carry that tradition forward with care and without compromise.
+          </span>
+        </p>
+        <p class="text-sm font-light leading-8" style="color:var(--cream-dim)">
+          <span data-en="Our wines are unfiltered, alive, and made with minimal intervention — honoring the soil, the grape, and the season. No additives. No shortcuts. Pure wine as nature intended."
+                data-ka="ჩვენი ღვინოები გაუფილტრავი, ცოცხალი და მინიმალური ჩარევით დამზადებულია — ნიადაგის, ყურძნის და სეზონის პატივისცემით. არცერთი დანამატი. არცერთი გასავალი. სუფთა ღვინო ბუნების ნებართვით.">
+            Our wines are unfiltered, alive, and made with minimal intervention — honoring the soil, the grape, and the season. No additives. No shortcuts. Pure wine as nature intended.
+          </span>
+        </p>
+
+        <div style="display:flex;gap:40px;margin-top:40px">
+          <div>
+            <div class="font-display" style="font-size:40px;font-style:italic;color:var(--gold)">8k+</div>
+            <div class="text-xs tracking-widest uppercase mt-1" style="font-family:'Jost';color:var(--cream-dim)">
+              <span data-en="Years Tradition" data-ka="ტრადიციის წელი">Years Tradition</span>
+            </div>
+          </div>
+          <div>
+            <div class="font-display" style="font-size:40px;font-style:italic;color:var(--gold)">100%</div>
+            <div class="text-xs tracking-widest uppercase mt-1" style="font-family:'Jost';color:var(--cream-dim)">
+              <span data-en="Natural Wine" data-ka="ბუნებრივი ღვინო">Natural Wine</span>
+            </div>
+          </div>
+          <div>
+            <div class="font-display" style="font-size:40px;font-style:italic;color:var(--gold)">Qvevri</div>
+            <div class="text-xs tracking-widest uppercase mt-1" style="font-family:'Jost';color:var(--cream-dim)">
+              <span data-en="Clay Aged" data-ka="თიხაში დავარგებული">Clay Aged</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image -->
+      <div class="reveal" style="position:relative">
+        <div style="position:relative" class="corner-tl corner-br">
+          <img src="Assets/vineyard.jpg" alt="Gvazei Vineyard"
+               style="width:100%;aspect-ratio:3/4;object-fit:cover;filter:brightness(0.78) sepia(0.1)"
+               onerror="this.style.display='none'">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════
+     WINES
+════════════════════════════════════ -->
+<section id="wines" style="padding:80px 28px 96px" class="md:px-16">
+  <div style="max-width:1200px;margin:0 auto">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:56px" class="reveal">
+      <p class="text-xs tracking-widest uppercase mb-4" style="font-family:'Jost';color:var(--gold)">
+        <span data-en="The Collection" data-ka="კოლექცია">The Collection</span>
+      </p>
+      <h2 class="font-display" style="font-size:clamp(44px,6vw,68px);font-style:italic;color:var(--cream)">
+        <span data-en="Our Wines" data-ka="ჩვენი ღვინოები">Our Wines</span>
+      </h2>
+      <span class="gold-rule" style="margin:20px auto 16px;display:block"></span>
+      <p class="text-xs tracking-widest uppercase" style="font-family:'Jost';color:var(--cream-dim)">
+        <span data-en="Click any wine to order via WhatsApp" data-ka="WhatsApp-ით შესაკვეთად დააჭირეთ">Click any wine to order via WhatsApp</span>
+      </p>
+    </div>
+
+    <!-- Grid -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px" class="md:grid-cols-3 reveal">
+
+      <!-- 1 · Rkatsiteli -->
+      <div class="wine-card card-bg-white" onclick="orderWine('Rkatsiteli','რქაწითელი')">
+        <img src="Assets/rkatsiteli.jpg" alt="Rkatsiteli" onerror="this.remove()">
+        <div class="wine-card-gradient"></div>
+        <div class="wine-card-body">
+          <p class="text-xs tracking-widest uppercase mb-1" style="font-family:'Jost';color:var(--gold)">
+            <span data-en="White · Amber" data-ka="თეთრი · ქარვისფერი">White · Amber</span>
+          </p>
+          <h3 class="font-display text-2xl" style="font-style:italic;color:var(--cream)">Rkatsiteli</h3>
+          <p style="font-family:'Jost';font-size:11px;color:var(--cream-dim);margin-top:3px">
+            <span data-en="Qvevri · Natural" data-ka="ქვევრი · ბუნებრივი">Qvevri · Natural</span>
+          </p>
+        </div>
+        <div class="wine-card-cta">
+          <span class="btn-wa" style="font-size:10px;padding:8px 18px">
+            <svg class="wa-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span data-en="Order" data-ka="შეკვეთა">Order</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- 2 · Saperavi -->
+      <div class="wine-card card-bg-red" onclick="orderWine('Saperavi','საფერავი')">
+        <img src="Assets/saperavi.jpg" alt="Saperavi" onerror="this.remove()">
+        <div class="wine-card-gradient"></div>
+        <div class="wine-card-body">
+          <p class="text-xs tracking-widest uppercase mb-1" style="font-family:'Jost';color:var(--gold)">
+            <span data-en="Red · Dry" data-ka="წითელი · მშრალი">Red · Dry</span>
+          </p>
+          <h3 class="font-display text-2xl" style="font-style:italic;color:var(--cream)">Saperavi</h3>
+          <p style="font-family:'Jost';font-size:11px;color:var(--cream-dim);margin-top:3px">
+            <span data-en="Full Body · Natural" data-ka="სავსე · ბუნებრივი">Full Body · Natural</span>
+          </p>
+        </div>
+        <div class="wine-card-cta">
+          <span class="btn-wa" style="font-size:10px;padding:8px 18px">
+            <svg class="wa-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span data-en="Order" data-ka="შეკვეთა">Order</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- 3 · Mtsvane -->
+      <div class="wine-card card-bg-white" onclick="orderWine('Mtsvane','მწვანე')">
+        <img src="Assets/mtsvane.jpg" alt="Mtsvane" onerror="this.remove()">
+        <div class="wine-card-gradient"></div>
+        <div class="wine-card-body">
+          <p class="text-xs tracking-widest uppercase mb-1" style="font-family:'Jost';color:var(--gold)">
+            <span data-en="White · Fresh" data-ka="თეთრი · ახალი">White · Fresh</span>
+          </p>
+          <h3 class="font-display text-2xl" style="font-style:italic;color:var(--cream)">Mtsvane</h3>
+          <p style="font-family:'Jost';font-size:11px;color:var(--cream-dim);margin-top:3px">
+            <span data-en="Crisp · Natural" data-ka="ცოცხალი · ბუნებრივი">Crisp · Natural</span>
+          </p>
+        </div>
+        <div class="wine-card-cta">
+          <span class="btn-wa" style="font-size:10px;padding:8px 18px">
+            <svg class="wa-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span data-en="Order" data-ka="შეკვეთა">Order</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- 4 · Amber Qvevri -->
+      <div class="wine-card card-bg-amber" onclick="orderWine('Amber Qvevri','ქარვისფერი ქვევრი')">
+        <img src="Assets/amber.jpg" alt="Amber Qvevri" onerror="this.remove()">
+        <div class="wine-card-gradient"></div>
+        <div class="wine-card-body">
+          <p class="text-xs tracking-widest uppercase mb-1" style="font-family:'Jost';color:var(--gold)">
+            <span data-en="Amber · Skin Contact" data-ka="ქარვისფერი · კანი">Amber · Skin Contact</span>
+          </p>
+          <h3 class="font-display text-2xl" style="font-style:italic;color:var(--cream)">Amber Qvevri</h3>
+          <p style="font-family:'Jost';font-size:11px;color:var(--cream-dim);margin-top:3px">
+            <span data-en="Complex · Aged" data-ka="მრავალმხრივი · დავარგებული">Complex · Aged</span>
+          </p>
+        </div>
+        <div class="wine-card-cta">
+          <span class="btn-wa" style="font-size:10px;padding:8px 18px">
+            <svg class="wa-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span data-en="Order" data-ka="შეკვეთა">Order</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- 5 · Saperavi Reserve -->
+      <div class="wine-card card-bg-red" onclick="orderWine('Saperavi Reserve','საფერავი რეზერვი')">
+        <img src="Assets/saperavi-reserve.jpg" alt="Saperavi Reserve" onerror="this.remove()">
+        <div class="wine-card-gradient"></div>
+        <div class="wine-card-body">
+          <p class="text-xs tracking-widest uppercase mb-1" style="font-family:'Jost';color:var(--gold)">
+            <span data-en="Red · Reserve" data-ka="წითელი · რეზერვი">Red · Reserve</span>
+          </p>
+          <h3 class="font-display text-2xl" style="font-style:italic;color:var(--cream)">Saperavi Reserve</h3>
+          <p style="font-family:'Jost';font-size:11px;color:var(--cream-dim);margin-top:3px">
+            <span data-en="Premium · Aged" data-ka="პრემიუმ · დავარგებული">Premium · Aged</span>
+          </p>
+        </div>
+        <div class="wine-card-cta">
+          <span class="btn-wa" style="font-size:10px;padding:8px 18px">
+            <svg class="wa-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span data-en="Order" data-ka="შეკვეთა">Order</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- 6 · Gift Selection -->
+      <div class="wine-card card-bg-gift" onclick="orderWine('Gift Selection','საჩუქარი სელექცია')">
+        <img src="Assets/selection.jpg" alt="Gift Selection" onerror="this.remove()">
+        <div class="wine-card-gradient"></div>
+        <div class="wine-card-body">
+          <p class="text-xs tracking-widest uppercase mb-1" style="font-family:'Jost';color:var(--gold)">
+            <span data-en="Gift · Set" data-ka="საჩუქარი · სეტი">Gift · Set</span>
+          </p>
+          <h3 class="font-display text-2xl" style="font-style:italic;color:var(--cream)">Gift Selection</h3>
+          <p style="font-family:'Jost';font-size:11px;color:var(--cream-dim);margin-top:3px">
+            <span data-en="Curated Collection" data-ka="კურირებული კოლექცია">Curated Collection</span>
+          </p>
+        </div>
+        <div class="wine-card-cta">
+          <span class="btn-wa" style="font-size:10px;padding:8px 18px">
+            <svg class="wa-icon-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span data-en="Order" data-ka="შეკვეთა">Order</span>
+          </span>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════
+     GALLERY
+════════════════════════════════════ -->
+<section id="gallery" style="padding:80px 28px 96px" class="md:px-16">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:48px" class="reveal">
+      <p class="text-xs tracking-widest uppercase mb-4" style="font-family:'Jost';color:var(--gold)">
+        <span data-en="The Vineyard" data-ka="ვენახი">The Vineyard</span>
+      </p>
+      <h2 class="font-display" style="font-size:clamp(44px,6vw,68px);font-style:italic;color:var(--cream)">
+        <span data-en="Life at Gvazei" data-ka="ცხოვრება ღვაზეიში">Life at Gvazei</span>
+      </h2>
+      <span class="gold-rule" style="margin:18px auto 0;display:block"></span>
+    </div>
+
+    <div class="gallery-grid reveal">
+      <div class="gallery-cell"><img src="Assets/gallery1.jpg" alt="" onerror="this.parentElement.remove()"></div>
+      <div class="gallery-cell"><img src="Assets/gallery2.jpg" alt="" onerror="this.parentElement.remove()"></div>
+      <div class="gallery-cell"><img src="Assets/gallery3.jpg" alt="" onerror="this.parentElement.remove()"></div>
+      <div class="gallery-cell"><img src="Assets/gallery4.jpg" alt="" onerror="this.parentElement.remove()"></div>
+      <div class="gallery-cell"><img src="Assets/gallery5.jpg" alt="" onerror="this.parentElement.remove()"></div>
+      <div class="gallery-cell"><img src="Assets/gallery6.jpg" alt="" onerror="this.parentElement.remove()"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:28px" class="reveal">
+      <a href="https://www.instagram.com/gvazi.winery/" target="_blank"
+         style="display:inline-flex;align-items:center;gap:8px;font-family:'Jost';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cream-dim);text-decoration:none;transition:color 0.3s"
+         onmouseover="this.style.color='var(--cream)'" onmouseout="this.style.color='var(--cream-dim)'">
+        <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @gvazi.winery
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════
+     CONTACT
+════════════════════════════════════ -->
+<section id="contact" style="padding:80px 28px 96px;border-top:1px solid rgba(184,144,48,0.1)" class="md:px-16">
+  <div style="max-width:720px;margin:0 auto;text-align:center" class="reveal">
+    <p class="text-xs tracking-widest uppercase mb-4" style="font-family:'Jost';color:var(--gold)">
+      <span data-en="Get in Touch" data-ka="დაგვიკავშირდით">Get in Touch</span>
+    </p>
+    <h2 class="font-display mb-6" style="font-size:clamp(42px,6vw,66px);font-style:italic;color:var(--cream)">
+      <span data-en="Ready to order?" data-ka="მზად ხართ შეუკვეთოთ?">Ready to order?</span>
+    </h2>
+    <span class="gold-rule" style="margin:0 auto 32px;display:block"></span>
+    <p class="text-sm font-light leading-8 mb-10" style="color:var(--cream-dim)">
+      <span data-en="Reach us directly on WhatsApp for orders, questions, or to arrange a tasting experience at the winery."
+            data-ka="WhatsApp-ზე დაგვიკავშირდით შეკვეთებისთვის, კითხვებისთვის ან მარანში დეგუსტაციის მოწყობისთვის.">
+        Reach us directly on WhatsApp for orders, questions, or to arrange a tasting experience at the winery.
+      </span>
+    </p>
+
+    <a href="https://wa.me/995599946000" target="_blank" class="btn-wa" style="font-size:12px;padding:15px 44px">
+      <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      +995 599 946 000
+    </a>
+
+    <div style="display:flex;justify-content:center;gap:48px;margin-top:56px;flex-wrap:wrap">
+      <div>
+        <div class="text-xs tracking-widest uppercase mb-2" style="font-family:'Jost';color:var(--gold)">
+          <span data-en="Location" data-ka="მდებარეობა">Location</span>
+        </div>
+        <div class="text-sm font-light" style="color:var(--cream-dim)">
+          <span data-en="Kakheti, Georgia" data-ka="კახეთი, საქართველო">Kakheti, Georgia</span>
+        </div>
+      </div>
+      <div>
+        <div class="text-xs tracking-widest uppercase mb-2" style="font-family:'Jost';color:var(--gold)">WhatsApp</div>
+        <div class="text-sm font-light" style="color:var(--cream-dim)">+995 599 946 000</div>
+      </div>
+      <div>
+        <div class="text-xs tracking-widest uppercase mb-2" style="font-family:'Jost';color:var(--gold)">Instagram</div>
+        <a href="https://www.instagram.com/gvazi.winery/" target="_blank" class="text-sm font-light" style="color:var(--cream-dim);text-decoration:none">@gvazi.winery</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════
+     FOOTER
+════════════════════════════════════ -->
+<footer style="padding:28px;border-top:1px solid rgba(184,144,48,0.1)">
+  <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <span class="font-display" style="font-size:20px;font-style:italic;color:var(--gold)">Gvazei</span>
+    <span class="text-xs tracking-widest" style="font-family:'Jost';color:var(--cream-dim)">
+      <span data-en="© 2025 Gvazei Vineyard Winery · Kakheti, Georgia" data-ka="© 2025 ღვაზეი მარანი · კახეთი, საქართველო">© 2025 Gvazei Vineyard Winery · Kakheti, Georgia</span>
+    </span>
+    <a href="https://www.instagram.com/gvazi.winery/" target="_blank" class="text-xs tracking-widest" style="font-family:'Jost';color:var(--cream-dim);text-decoration:none;opacity:0.55;transition:opacity 0.3s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.55'">@gvazi.winery</a>
+  </div>
+</footer>
+
+
+<!-- ════════════════════════════════════
+     FLOATING WHATSAPP
+════════════════════════════════════ -->
+<a href="https://wa.me/995599946000" target="_blank" class="wa-bubble" title="Order on WhatsApp">
+  <svg style="width:26px;height:26px" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+
+<!-- ════════════════════════════════════
+     BOTTOM ORDER DRAWER
+════════════════════════════════════ -->
+<div id="order-drawer">
+  <div class="drawer-tab" onclick="toggleDrawer()">
+    <svg style="width:14px;height:14px;flex-shrink:0" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <span id="drawer-label" data-en="Quick Order" data-ka="სწრაფი შეკვეთა">Quick Order</span>
+    <span id="drawer-arrow" style="font-size:9px;color:rgba(240,232,216,0.6)">▲</span>
+  </div>
+  <div class="drawer-body">
+    <button class="drawer-btn" onclick="orderWine('Rkatsiteli','რქაწითელი')" data-en="Rkatsiteli" data-ka="რქაწითელი">Rkatsiteli</button>
+    <button class="drawer-btn" onclick="orderWine('Saperavi','საფერავი')" data-en="Saperavi" data-ka="საფერავი">Saperavi</button>
+    <button class="drawer-btn" onclick="orderWine('Mtsvane','მწვანე')" data-en="Mtsvane" data-ka="მწვანე">Mtsvane</button>
+    <button class="drawer-btn" onclick="orderWine('Amber Qvevri','ქარვისფერი ქვევრი')" data-en="Amber Qvevri" data-ka="ქარვისფერი ქვევრი">Amber Qvevri</button>
+    <button class="drawer-btn" onclick="orderWine('Saperavi Reserve','საფერავი რეზერვი')" data-en="Saperavi Reserve" data-ka="საფერავი რეზერვი">Saperavi Reserve</button>
+    <button class="drawer-btn" onclick="orderWine('Gift Selection','საჩუქარი სელექცია')" data-en="Gift Selection" data-ka="საჩუქარი სელექცია">Gift Selection</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     JS
+════════════════════════════════════ -->
+<script>
+  // ── Language ──
+  let lang = 'en';
+  function toggleLang() {
+    lang = lang === 'en' ? 'ka' : 'en';
+    document.getElementById('lang-toggle-label').textContent = lang === 'en' ? 'KA' : 'EN';
+    document.querySelectorAll('[data-en]').forEach(el => {
+      const val = el.getAttribute('data-' + lang);
+      if (!val) return;
+      if (val.includes('<br>')) el.innerHTML = val;
+      else el.textContent = val;
+    });
+  }
+
+  // ── WhatsApp ──
+  function orderWine(en, ka) {
+    const name = lang === 'ka' ? ka : en;
+    const msg  = lang === 'ka'
+      ? `გამარჯობა! მინდა შევუკვეთო: ${name}`
+      : `Hello! I'd like to order: ${name}`;
+    window.open('https://wa.me/995599946000?text=' + encodeURIComponent(msg), '_blank');
+  }
+
+  // ── Bottom Drawer ──
+  let drawerOpen = false;
+  function toggleDrawer() {
+    drawerOpen = !drawerOpen;
+    document.getElementById('order-drawer').classList.toggle('open', drawerOpen);
+    document.getElementById('drawer-arrow').textContent = drawerOpen ? '▼' : '▲';
+  }
+
+  // ── Nav scroll ──
+  window.addEventListener('scroll', () => {
+    document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── Mobile nav ──
+  function openMobileNav()  { document.getElementById('mobile-nav-overlay').classList.add('open'); }
+  function closeMobileNav() { document.getElementById('mobile-nav-overlay').classList.remove('open'); }
+
+  // ── Scroll reveal ──
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+
+</body>
+</html>
